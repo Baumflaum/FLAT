@@ -35,6 +35,7 @@ from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_f
 tf.logging.set_verbosity(tf.logging.INFO)
 from vis_flow import *
 from kinect_init import *
+from PIL import Image
 
 PI = 3.14159265358979323846
 raw_depth_new = 0
@@ -89,7 +90,7 @@ def data_augment(scene_n, array_dir, tof_cam, text_flg = False):
     meas_gt = np.stack(meas_gt, -1)
 
     # reduce the resolution of the depth
-    depth_true_s = np.array(Image.fromarray(depth_true).resize(meas.shape[1], meas.shape[0]))
+    depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
     depth_true_s = tof_cam.dist_to_depth(depth_true_s)
 
     # load the mask and classification
@@ -117,7 +118,7 @@ def data_augment(scene_n, array_dir, tof_cam, text_flg = False):
         lo = np.random.uniform(0,1) # random range
         hi = np.random.uniform(lo,1)
         im_text = im_text * (hi-lo) + lo
-        im_text = np.array(Image.fromarray(im_text).resize(meas.shape[1], meas.shape[0]))
+        im_text = np.array(Image.fromarray(im_text).resize((meas.shape[1], meas.shape[0])))
         im_text = np.expand_dims(im_text,-1)
 
         meas = meas * im_text
