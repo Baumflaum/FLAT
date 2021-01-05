@@ -33,9 +33,12 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 from kinect_init import *
 
+from PIL import Image
+
 PI = 3.14159265358979323846
 
 dtype = tf.float32
+
 
 def data_augment(scene_n, test_dir, tof_cam):
     print('Augmenting scene', scene_n)
@@ -61,11 +64,9 @@ def data_augment(scene_n, test_dir, tof_cam):
     meas_gt = res_gt['meas']
 
     # reduce the resolution of the depth
-    depth_true_s = scipy.misc.imresize(\
-        depth_true,\
-        meas.shape[0:2],\
-        mode='F'\
-    )
+
+    depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
     depth_true_s = tof_cam.dist_to_depth(depth_true_s)
     
     # load the mask and classification

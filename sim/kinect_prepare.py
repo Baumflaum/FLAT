@@ -23,6 +23,7 @@ import multiprocessing
 import scipy.sparse as sp
 import sys
 
+from PIL import Image
 from tensorflow.contrib import learn
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -296,11 +297,8 @@ def testing_msk(tests, test_dir, tof_cam, tof_net, base_cor, cam):
 			depth_true = np.reshape(gt,(cam['dimy']*4,cam['dimx']*4))
 
 			# reduce the resolution of the depth
-			depth_true_s = scipy.misc.imresize(\
-				depth_true,\
-				[cam['dimy'],cam['dimx']],\
-				mode='F'\
-			)
+			depth_true_s = np.array(Image.fromarray(depth_true).resize((cam['dimx'],cam['dimy'])))
+
 			# load ground truth, convert distance to depth
 			depth_true = tof_cam.dist_to_depth(depth_true_s)
 
@@ -359,11 +357,7 @@ def testing(tests, test_dir, output_dir, tof_cam, tof_net, base_cor, cam):
 			depth_true = np.reshape(gt,(cam['dimy']*4,cam['dimx']*4))
 			
 			# reduce the resolution of the depth
-			depth_true_s = scipy.misc.imresize(\
-				depth_true,\
-				[cam['dimy'],cam['dimx']],\
-				mode='F'\
-			)
+			depth_true_s = np.array(Image.fromarray(depth_true).resize((cam['dimx'], cam['dimy'])))
 
 			# elaborate the camera
 			tof_cam.cam['dimx'] = cam['dimx']

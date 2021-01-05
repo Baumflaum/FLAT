@@ -24,6 +24,9 @@ import scipy.sparse as sp
 
 from tensorflow.contrib import learn
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
+
+from PIL import Image
+
 tf.logging.set_verbosity(tf.logging.INFO)
 
 def gen_raw(scene_n, data_dir, tof_cam):
@@ -56,7 +59,8 @@ def gen_raw(scene_n, data_dir, tof_cam):
 
 	# compute mask
 	msk_true_s = msk['background'] * msk['edge']
-	depth_true_s = scipy.misc.imresize(depth_true,msk_array.shape[0:2],mode='F')
+
+	depth_true_s = np.array(Image.fromarray(depth_true).resize((msk_array.shape[1], msk_array.shape[0])))
 
 	# simulate the raw measurement
 	res = tof_cam.process_gain_noise(cam, prop_idx, prop_s, scene, depth_true)

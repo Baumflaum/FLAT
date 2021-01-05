@@ -11,6 +11,7 @@ from utils import *
 import scipy.misc
 import scipy.interpolate
 from matplotlib import pyplot as plt
+from PIL import Image
 
 class cam_baseline:
 	# baseline tof camera, uses square wave for emission and modulation
@@ -1252,7 +1253,7 @@ class kinect_real_tf:
 		t_idx = t / self.cam['exp']
 		t_idx[np.where(depth_true<1e-4)] = np.nan
 		t_idx[np.where(t_idx>cor.shape[1])] = np.nan
-		t_idx = scipy.misc.imresize(t_idx,(cam['dimy'],cam['dimx']),mode='F')
+		t_idx = np.array(Image.fromarray(t_idx).resize((cam['dimx'],cam['dimy'])))
 
 		# create the delay function
 		self.f = []
@@ -1286,7 +1287,7 @@ class kinect_real_tf:
 		t_idx = t / self.cam['exp']
 		t_idx[np.where(depth_true<1e-4)] = np.nan
 		t_idx[np.where(t_idx>cor.shape[1])] = np.nan
-		t_idx = scipy.misc.imresize(t_idx,(cam['dimy'],cam['dimx']),mode='F')
+		t_idx = np.array(Image.fromarray(t_idx).resize((cam['dimx'],cam['dimy'])))
 
 		# create the delay function
 		self.f = []

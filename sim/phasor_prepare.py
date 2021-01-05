@@ -24,6 +24,10 @@ import scipy.sparse as sp
 
 from tensorflow.contrib import learn
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
+
+from PIL import Image
+
+
 tf.logging.set_verbosity(tf.logging.INFO)
 
 def gen_raw(scene_n, data_dir, tof_cam, func):
@@ -47,8 +51,7 @@ def gen_raw(scene_n, data_dir, tof_cam, func):
 	prop_s = deepcopy(data['prop_s'])
 
 	# generate true depth
-	depth_true_s = scipy.misc.imresize(depth_true,(cam['dimy'],cam['dimx']),mode='F')
-
+	depth_true_s = np.array(Image.fromarray(depth_true).resize((cam['dimx'],cam['dimy'])))
 	# generate the raw measurement
 	res = func(cam, prop_idx, prop_s, scene, depth_true)
 	meas = res['meas']

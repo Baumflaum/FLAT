@@ -32,6 +32,8 @@ from tensorflow.contrib import learn
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
 tf.logging.set_verbosity(tf.logging.INFO)
 
+from PIL import Image
+
 from kinect_init import *
 
 PI = 3.14159265358979323846
@@ -140,11 +142,8 @@ def data_augment_th(scene_ns, array_dir, tof_cam, text_flg = False): # first loa
         # meas = meas[::-1,:,:]
 
         # reduce the resolution of the depth
-        depth_true_s = scipy.misc.imresize(\
-            depth_true,\
-            meas.shape[0:2],\
-            mode='F'\
-        )
+        depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
         depth_true_s = tof_cam.dist_to_depth(depth_true_s)
 
         # load the mask and classification
@@ -177,7 +176,7 @@ def data_augment_th(scene_ns, array_dir, tof_cam, text_flg = False): # first loa
             lo = np.random.uniform(0,1) # random range
             hi = np.random.uniform(lo,1)
             im_text = im_text * (hi-lo) + lo
-            im_text = scipy.misc.imresize(im_text,meas.shape[0:2],mode='F')
+            im_text = np.array(Image.fromarray(im_text).resize((meas.shape[1], meas.shape[0])))
             im_text = np.expand_dims(im_text,-1)
 
             # apply the texture

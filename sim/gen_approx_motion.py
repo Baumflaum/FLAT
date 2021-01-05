@@ -33,6 +33,8 @@ tf.logging.set_verbosity(tf.logging.INFO)
 from vis_flow import *
 from kinect_init import *
 
+from PIL import Image
+
 PI = 3.14159265358979323846
 raw_depth_new = 0
 flg = False
@@ -102,11 +104,9 @@ def gen_approx_motion(scene_ns, array_dir, tof_cam, text_flg = False, do_vis = T
 
             # reduce the resolution of the depth
             depth_true[np.where(depth_true==0)] = np.nan # deal with the mix problem at edge
-            depth_true_s = scipy.misc.imresize(\
-                depth_true,\
-                meas.shape[0:2],\
-                mode='F'\
-            )
+
+            depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
             depth_true_s = tof_cam.dist_to_depth(depth_true_s)
             depth_true_s[np.where(np.isnan(depth_true_s))] = 0
 
@@ -143,7 +143,8 @@ def gen_approx_motion(scene_ns, array_dir, tof_cam, text_flg = False, do_vis = T
                 lo = np.random.uniform(0,1) # random range
                 hi = np.random.uniform(lo,1)
                 im_text = im_text * (hi-lo) + lo
-                im_text = scipy.misc.imresize(im_text,meas.shape[0:2],mode='F')
+
+                im_text = np.array(Image.fromarray(im_text).resize((meas.shape[1], meas.shape[0])))
                 im_text = np.expand_dims(im_text,-1)
 
                 # apply the texture

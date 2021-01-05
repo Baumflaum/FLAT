@@ -34,6 +34,8 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 from kinect_init import *
 
+from PIL import Image
+
 PI = 3.14159265358979323846
 raw_depth_new = 0
 flg = False
@@ -227,11 +229,9 @@ def data_augment_th(scene_ns, array_dir, tof_cam, text_flg = False):
             # meas = meas[::-1,:,:]
 
             # reduce the resolution of the depth
-            depth_true_s = scipy.misc.imresize(\
-                depth_true,\
-                meas.shape[0:2],\
-                mode='F'\
-            )
+
+            depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
             depth_true_s = tof_cam.dist_to_depth(depth_true_s)
 
             # load the mask and classification
@@ -247,11 +247,9 @@ def data_augment_th(scene_ns, array_dir, tof_cam, text_flg = False):
             # compute mask
             # msk_true_s = msk['background'] * msk['edge']
             msk_true = (depth_true > 1e-4).astype(np.float32)
-            msk_true_s = scipy.misc.imresize(\
-                msk_true,\
-                meas.shape[0:2],\
-                mode='F'\
-            )
+
+            msk_true_s = np.array(Image.fromarray(msk_true).resize((meas.shape[1], meas.shape[0])))
+
             msk_true_s = (msk_true_s > 0.999).astype(np.float32)
             depth_true_s = msk_true_s * depth_true_s
 
@@ -269,7 +267,7 @@ def data_augment_th(scene_ns, array_dir, tof_cam, text_flg = False):
                 lo = np.random.uniform(0,1) # random range
                 hi = np.random.uniform(lo,1)
                 im_text = im_text * (hi-lo) + lo
-                im_text = scipy.misc.imresize(im_text,meas.shape[0:2],mode='F')
+                im_text = np.array(Image.fromarray(im_text).resize((meas.shape[1], meas.shape[0])))
                 im_text = np.expand_dims(im_text,-1)
 
                 # apply the texture
@@ -675,11 +673,9 @@ def data_augment_3d(scene_ns, array_dir, tof_cam, text_flg = False):
 
             # reduce the resolution of the depth
             depth_true[np.where(depth_true==0)] = np.nan # deal with the mix problem at edge
-            depth_true_s = scipy.misc.imresize(\
-                depth_true,\
-                meas.shape[0:2],\
-                mode='F'\
-            )
+
+            depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
             depth_true_s = tof_cam.dist_to_depth(depth_true_s)
             depth_true_s[np.where(np.isnan(depth_true_s))] = 0
 
@@ -710,7 +706,7 @@ def data_augment_3d(scene_ns, array_dir, tof_cam, text_flg = False):
                 lo = np.random.uniform(0,1) # random range
                 hi = np.random.uniform(lo,1)
                 im_text = im_text * (hi-lo) + lo
-                im_text = scipy.misc.imresize(im_text,meas.shape[0:2],mode='F')
+                im_text = np.array(Image.fromarray(im_text).resize((meas.shape[1], meas.shape[0])))
                 im_text = np.expand_dims(im_text,-1)
 
                 # apply the texture
@@ -1094,11 +1090,8 @@ def data_augment_axial(name, array_dir, tof_cam):
     meas_gt = np.stack(meas_gt, -1)
 
     # reduce the resolution of the depth
-    depth_true_s = scipy.misc.imresize(\
-        depth_true,\
-        meas.shape[0:2],\
-        mode='F'\
-    )
+    depth_true_s = np.array(Image.fromarray(depth_true).resize((meas.shape[1], meas.shape[0])))
+
     depth_true_s = tof_cam.dist_to_depth(depth_true_s)
 
     # load the mask and classification
